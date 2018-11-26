@@ -20,6 +20,9 @@ $content = get-content $sourcefilename | % {
 #>
 
 
+$ou = "OU=Servers,DC=contoso,DC=com"
+$computers = (Get-ADComputer -Filter * -SearchBase $ou).Name | Sort-Object -Property Name
+
 workflow Ping-Hosts
     {
         param
@@ -29,10 +32,8 @@ workflow Ping-Hosts
     
         foreach -parallel ($computer in $computers)
             {
-                Test-NetConnection -ComputerName $computer
+                Test-Connection -ComputerName $computer -Count 2 -Quiet
             }
     }
-
-$computers = "localhost","Host2"
 
 Ping-Hosts $computers
